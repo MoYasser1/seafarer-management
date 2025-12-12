@@ -5,6 +5,14 @@
     "packageManager": "npm",
     "analytics": "86431fea-45e0-431d-b5d2-78a6479f9fc0"
   },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "serve:ssr": "node dist/seafarer-management/server/main.js"
+  },
   "newProjectRoot": "projects",
   "projects": {
     "seafarer-management": {
