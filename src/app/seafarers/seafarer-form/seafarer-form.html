@@ -1,0 +1,193 @@
+<div class="app-page">
+    <div class="form-container">
+
+        <header class="form-header">
+            <h1 class="form-header__title">
+                {{ isEditMode ? 'Edit Seafarer Details' : 'Add New Seafarer' }}
+            </h1>
+            <button type="button" class="btn btn--secondary btn--icon" (click)="onCancel()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Back to List</span>
+            </button>
+        </header>
+
+        <div *ngIf="isLoading" class="loading-state">
+            <div class="spinner"></div>
+            <p class="loading-state__text">Loading data...</p>
+        </div>
+
+        <form [formGroup]="seafarerForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading" class="seafarer-form">
+
+            <ng-template #FormInput let-controlName="controlName" let-label="label" let-type="type" let-placeholder="placeholder" let-required="required">
+                <div class="form-group" [class.form-group--error]="hasError(controlName)">
+                    <label [for]="controlName" class="form-label">
+                        {{ label }} <span *ngIf="required" class="form-label__required">*</span>
+                    </label>
+                    <input [type]="type || 'text'" [id]="controlName" [formControlName]="controlName" [placeholder]="placeholder"
+                        class="form-input">
+                    <span *ngIf="hasError(controlName)" class="form-error-message">
+                        {{ getErrorMessage(controlName) }}
+                    </span>
+                </div>
+            </ng-template>
+
+
+            <div class="card card--section">
+                <h2 class="card__title">Basic Information</h2>
+                <div class="card__content card__content--grid-2">
+                    <div class="form-group" [class.form-group--error]="hasError('empId')">
+                        <label for="empId" class="form-label">Employee <span class="form-label__required">*</span></label>
+                        <div class="input-select-wrapper">
+                            <select id="empId" formControlName="empId" class="form-input form-input--select">
+                                <option [value]="null" disabled>Select Employee</option>
+                                <option *ngFor="let emp of employees" [value]="emp.EmpId">
+                                    {{ emp.EmpCode }} - {{ emp.EmpName }}
+                                </option>
+                            </select>
+                            <span class="select-arrow">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5z"></path></svg>
+                            </span>
+                        </div>
+                        <span *ngIf="hasError('empId')" class="form-error-message">{{ getErrorMessage('empId') }}</span>
+                        <small class="form-helper">📊 Loaded: {{ employees.length }} | Loading: {{ isLoadingDropdowns ? 'Yes' : 'No' }}</small>
+                    </div>
+
+                    <div class="form-group" [class.form-group--error]="hasError('visaSponsorId')">
+                        <label for="visaSponsorId" class="form-label">Visa Sponsor <span class="form-label__required">*</span></label>
+                        <div class="input-select-wrapper">
+                            <select id="visaSponsorId" formControlName="visaSponsorId" class="form-input form-input--select">
+                                <option [value]="null" disabled>
+                                    {{ isLoadingDropdowns ? 'Loading...' : vendors.length === 0 ? 'No Sponsors available' : 'Select Sponsor' }}
+                                </option>
+                                <option *ngFor="let vendor of vendors" [value]="vendor.VendorId">
+                                    {{ vendor.VendorCode ? vendor.VendorCode + ' - ' : '' }}{{ vendor.VendorName }}
+                                </option>
+                            </select>
+                            <span class="select-arrow">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5z"></path></svg>
+                            </span>
+                        </div>
+                        <span *ngIf="hasError('visaSponsorId')" class="form-error-message">{{ getErrorMessage('visaSponsorId') }}</span>
+                        <span *ngIf="vendors.length === 0 && !isLoadingDropdowns" class="form-warning-message">⚠️ No sponsors found.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card--section">
+                <h2 class="card__title">Passport Information</h2>
+                <div class="card__content card__content--grid-3">
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'passportNumber', label: 'Passport Number', placeholder: 'e.g., A1234567' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'passportIssueDate', label: 'Issue Date', type: 'date', required: true }"></ng-container>
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'passportExpiryDate', label: 'Expiry Date', type: 'date', required: true }"></ng-container>
+                </div>
+            </div>
+
+            <div class="card card--section">
+                <h2 class="card__title">Visa Information</h2>
+                <div class="card__content card__content--grid-3">
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'visaNumber', label: 'Visa Number', placeholder: 'Enter visa number' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'visaIssueDate', label: 'Issue Date', type: 'date', required: true }"></ng-container>
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'visaExpiryDate', label: 'Expiry Date', type: 'date', required: true }"></ng-container>
+                </div>
+            </div>
+
+            <div class="card card--section">
+                <h2 class="card__title">Personal & Employment Information</h2>
+                <div class="card__content card__content--grid-3">
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'BirthDate', label: 'Birth Date', type: 'date' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'Phone', label: 'Phone Number', placeholder: 'Enter phone number' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'NationalId', label: 'National ID', placeholder: 'Enter national ID' }"></ng-container>
+
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'EmploymentDate', label: 'Employment Date', type: 'date' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'InsuranceDate', label: 'Insurance Date', type: 'date' }"></ng-container>
+
+                    <div class="form-group form-group--checkbox">
+                        <label class="checkbox-label">
+                            <input type="checkbox" formControlName="isActive" class="checkbox-input">
+                            <span class="checkbox-box"></span>
+                            <span class="checkbox-text">Active Seafarer Status</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card--section">
+                <h2 class="card__title">Contract Information</h2>
+                <div class="card__content card__content--grid-2">
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'contractStartDate', label: 'Start Date', type: 'date' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="FormInput; context: { controlName: 'contractEndDate', label: 'End Date', type: 'date' }"></ng-container>
+                </div>
+            </div>
+
+            <div class="card card--section card--warning">
+                <h2 class="card__title card__title--warning">
+                    Medical Declaration
+                    <span class="card__subtitle">(Required for maritime compliance)</span>
+                </h2>
+
+                <div class="card__content card__content--grid-responsive">
+                    <ng-template #MedicalItem let-controlName="controlName" let-commentControlName="commentControlName" let-label="label">
+                        <div class="medical-item">
+                            <div class="medical-item__header">
+                                <label class="checkbox-label checkbox-label--small">
+                                    <input type="checkbox" [formControlName]="controlName" class="checkbox-input checkbox-input--danger">
+                                    <span class="checkbox-box"></span>
+                                    <span class="checkbox-text">{{ label }}</span>
+                                </label>
+                                <span *ngIf="seafarerForm.get(controlName)?.value" class="medical-item__status">⚠️ Declared</span>
+                            </div>
+
+                            <div class="medical-item__comment" *ngIf="seafarerForm.get(controlName)?.value">
+                                <label class="form-label form-label--small">Details / Comment:</label>
+                                <textarea [formControlName]="commentControlName" rows="2"
+                                    placeholder="Please provide details of the declaration..."
+                                    class="form-input form-input--textarea form-input--danger-focus"></textarea>
+                            </div>
+                        </div>
+                    </ng-template>
+
+                    <ng-container *ngTemplateOutlet="MedicalItem; context: { controlName: 'SignedOffFromAShipDueToMedicalReason', commentControlName: 'SignedOffFromAShipDueToMedicalReasonComment', label: 'Signed off from a ship due to medical reason?' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="MedicalItem; context: { controlName: 'UndergoneAnyMdicalOperation', commentControlName: 'UndergoneAnyMdicalOperationComment', label: 'Undergone any medical operation?' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="MedicalItem; context: { controlName: 'DoctorConsultation', commentControlName: 'DoctorConsultationComment', label: 'Required doctor consultation?' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="MedicalItem; context: { controlName: 'HealthOrDisabilityProblem', commentControlName: 'HealthOrDisabilityProblemComment', label: 'Any health or disability problem?' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="MedicalItem; context: { controlName: 'InquiryOrInvolvedMaritimeAccident', commentControlName: 'InquiryOrInvolvedMaritimeAccidentComment', label: 'Subject to inquiry or involved in maritime accident?' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="MedicalItem; context: { controlName: 'LicenseSuspendedOrRevoked', commentControlName: 'LicenseSuspendedOrRevokedComment', label: 'License suspended or revoked?' }"></ng-container>
+                </div>
+            </div>
+
+            <div class="card card--dev-status">
+                <h3 class="card__title card__title--dev">Form Status</h3>
+                <div class="dev-status__content">
+                    <p><strong>Form Valid:</strong> {{ seafarerForm.valid ? '✅ Yes' : '❌ No' }}</p>
+                    <p><strong>Is Saving:</strong> {{ isSaving ? '⏳ Yes' : '✅ No' }}</p>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn--secondary" (click)="onCancel()">Cancel</button>
+                <button type="submit" [disabled]="isSaving || seafarerForm.invalid"
+                        class="btn btn--primary btn--large"
+                        [class.btn--loading]="isSaving">
+                    <span *ngIf="!isSaving">{{ isEditMode ? 'Update Seafarer' : 'Create Seafarer' }}</span>
+                    <span *ngIf="isSaving" class="btn__loading-content">
+                        <div class="loader loader--inverse"></div>
+                        <span>Saving...</span>
+                    </span>
+                </button>
+            </div>
+        </form>
+
+        <div *ngIf="showToast" class="toast-notification"
+             [class.toast-notification--success]="toastType === 'success'"
+             [class.toast-notification--error]="toastType === 'error'">
+            <div class="toast-notification__content">
+                <span>{{ toastMessage }}</span>
+            </div>
+            <button class="toast-notification__close-btn" (click)="closeToast()">×</button>
+        </div>
+
+    </div>
+</div>

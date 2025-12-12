@@ -1,0 +1,503 @@
+/* --- 1. Variables & Design Tokens --- */
+:root {
+    /* Brand Colors (Dark Blue / White Aesthetic) */
+    --color-primary: #0f172a;       /* Dark Navy for Main Actions/Text */
+    --color-accent: #3b82f6;        /* Modern Blue for Focus/Interactive */
+    --color-accent-light: #eff6ff;  /* Light background for subtle accents */
+    --color-success: #10b981;       /* Green for success */
+    --color-error: #ef4444;         /* Red for errors/danger */
+    --color-warning: #f59e0b;       /* Amber for warnings */
+
+    /* Backgrounds & Surfaces */
+    --bg-page: #f9fafb;             /* Very Light Gray for background */
+    --bg-card: #ffffff;             /* Pure White for main surface */
+    --bg-input: #ffffff;
+    --bg-form-section: #f4f6f9;     /* Light Gray for section background */
+
+    /* Typography */
+    --text-main: #1f2937;           /* Dark Gray for main text */
+    --text-muted: #6b7280;          /* Gray for labels/placeholders */
+    --text-warning: #b45309;        /* Dark Amber for warning text */
+    --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    /* Spacing & Geometry */
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-input-focus: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Blue ring */
+    --shadow-danger-focus: 0 0 0 3px rgba(239, 68, 68, 0.3); /* Red ring */
+}
+
+/* --- 2. Base & Layout --- */
+.app-page {
+    min-height: 100vh;
+    background-color: var(--bg-page);
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+    font-family: var(--font-stack);
+    color: var(--text-main);
+}
+
+.form-container {
+    width: 100%;
+    max-width: 1000px;
+    background: var(--bg-page);
+}
+
+/* --- 3. Header & Navigation --- */
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.form-header__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: -0.025em;
+}
+
+/* --- 4. Card & Section Styling --- */
+.seafarer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 2rem;
+}
+
+.card--section {
+    border: 1px solid #e5e7eb;
+}
+
+.card__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
+    color: var(--color-primary);
+}
+
+.card__title--warning {
+    color: var(--color-warning);
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.card__subtitle {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-left: 0.5rem;
+}
+
+.card__content--grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+.card__content--grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Responsive Medical Grid */
+.card__content--grid-responsive {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+/* --- 5. Form Elements (Inputs, Labels, Errors) --- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.form-label__required {
+    color: var(--color-error);
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: var(--text-main);
+    background: var(--bg-input);
+    border: 1px solid #d1d5db;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-input-focus);
+}
+
+/* Error State */
+.form-group--error .form-input {
+    border-color: var(--color-error);
+}
+.form-group--error .form-input:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+}
+.form-error-message {
+    font-size: 0.75rem;
+    color: var(--color-error);
+    font-weight: 500;
+}
+.form-helper {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+.form-warning-message {
+    font-size: 0.75rem;
+    color: var(--color-warning);
+    font-weight: 500;
+}
+
+
+/* Select Input Styling */
+.input-select-wrapper {
+    position: relative;
+}
+.form-input--select {
+    appearance: none; /* Hide default arrow */
+    padding-right: 2.5rem; /* Make room for custom arrow */
+}
+.select-arrow {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text-muted);
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* --- 6. Checkbox Styling (Custom Flat) --- */
+.form-group--checkbox {
+    /* Align checkbox text to other input labels */
+    align-items: flex-start;
+    padding-top: 1.5rem; /* Adjust based on neighboring inputs */
+}
+
+.checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 500;
+}
+.checkbox-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+.checkbox-box {
+    height: 1.25rem;
+    width: 1.25rem;
+    min-width: 1.25rem;
+    background-color: #fff;
+    border: 2px solid #9ca3af;
+    border-radius: 4px;
+    margin-right: 0.75rem;
+    display: inline-block;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.checkbox-input:checked ~ .checkbox-box {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+.checkbox-input:checked ~ .checkbox-box::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.checkbox-text {
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+/* --- 7. Medical Declaration Section Specific --- */
+.medical-item {
+    background: var(--bg-form-section);
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.medical-item__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.medical-item__status {
+    color: var(--color-error);
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.medical-item__comment {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #d1d5db;
+}
+
+.form-input--textarea {
+    resize: vertical;
+}
+
+.form-input--danger-focus:focus {
+    border-color: var(--color-error);
+    box-shadow: var(--shadow-danger-focus);
+}
+
+.checkbox-label--small .checkbox-text {
+    font-size: 0.9375rem;
+}
+.checkbox-input--danger:checked ~ .checkbox-box {
+    background-color: var(--color-error);
+    border-color: var(--color-error);
+}
+
+/* --- 8. Buttons & Actions --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn--primary {
+    background-color: var(--color-primary);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.btn--primary:hover:not(:disabled) {
+    background-color: #1e293b;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.15);
+}
+
+.btn--secondary {
+    background-color: white;
+    color: var(--text-main);
+    border-color: #d1d5db;
+}
+
+.btn--secondary:hover:not(:disabled) {
+    background-color: #f9fafb;
+}
+
+.btn--icon {
+    display: inline-flex;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+
+.btn--large {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* --- 9. Loading & Development States --- */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5rem 0;
+    color: var(--color-primary);
+}
+
+.loading-state__text {
+    margin-top: 1rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+/* Spinner (Loader) */
+.spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid var(--color-accent);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loader {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--color-primary);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+.loader--inverse {
+    border-color: white;
+    border-bottom-color: transparent;
+}
+
+.btn__loading-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Development Status Card */
+.card--dev-status {
+    background-color: var(--color-accent-light);
+    border: 1px solid var(--color-accent);
+    padding: 1rem;
+}
+
+.card__title--dev {
+    color: var(--color-primary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.dev-status__content p {
+    font-size: 0.875rem;
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+/* --- 10. Toast Notification --- */
+.toast-notification {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 50;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: opacity 0.3s ease;
+    opacity: 0; /* Should be managed by Angular class binding */
+}
+
+.toast-notification--success {
+    background-color: var(--color-success);
+    color: white;
+}
+.toast-notification--error {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.toast-notification__close-btn {
+    margin-left: 1rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+.toast-notification__close-btn:hover {
+    opacity: 1;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .form-container {
+        padding: 0;
+    }
+    .form-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .form-header__title {
+        font-size: 1.5rem;
+    }
+    .card {
+        padding: 1.25rem;
+        border-radius: var(--radius-md);
+    }
+    .card__content--grid-2,
+    .card__content--grid-3 {
+        grid-template-columns: 1fr;
+    }
+    .card__content--grid-responsive {
+        grid-template-columns: 1fr;
+    }
+    .medical-item {
+        padding: 0.75rem;
+    }
+}
