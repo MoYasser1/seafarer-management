@@ -11,12 +11,13 @@ import {
   SaveSeafarerRequest,
   ApiResponse
 } from '../models/seafarer.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SeafarerService {
-  private readonly baseUrl = '/api'; // Using proxy now
+  private readonly baseUrl = environment.apiUrl ? `${environment.apiUrl}/api` : '/api'; // ✅ Use environment config
 
   constructor(private http: HttpClient) { }
 

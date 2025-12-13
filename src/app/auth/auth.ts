@@ -4,6 +4,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 // RxJS 6 uses .toPromise() instead of firstValueFrom
 
 export interface LoginResponse {
@@ -19,7 +20,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = ''; // Using proxy now
+  private apiUrl = environment.apiUrl; // ✅ Use environment config
   private isBrowser: boolean;
 
   constructor(
