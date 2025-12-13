@@ -30,10 +30,10 @@ export class SeafarerListComponent implements OnInit {
   ngOnInit(): void {
     this.loadSeafarers();
 
-    // ✅ Listen for query param changes (triggered after create/update)
+    // Listen for query param changes
     this.route.queryParams.subscribe(params => {
       if (params['refresh']) {
-        console.log('🔄 Refresh triggered, reloading seafarers...');
+        console.log('Refresh triggered, reloading seafarers...');
         this.loadSeafarers();
       }
     });
@@ -41,26 +41,26 @@ export class SeafarerListComponent implements OnInit {
 
 
   /**
-   * ✅ Load all seafarers from API
+   * Load all seafarers from API
    */
   async loadSeafarers(): Promise<void> {
-    console.log('🔄 Starting to load seafarers...');
+    console.log('Starting to load seafarers...');
     this.isLoading = true;
     this.errorMessage = '';
 
     try {
-      console.log('📞 Calling seafarerService.getAllSeafarers()...');
+      console.log('Calling seafarerService.getAllSeafarers()...');
       this.seafarers = await this.seafarerService.getAllSeafarers();
-      console.log('📊 Received seafarers data:', this.seafarers);
+      console.log('Received seafarers data:', this.seafarers);
       if (this.seafarers && this.seafarers.length > 0) {
-        console.log('📋 First seafarer raw object (Golden Sample):', JSON.stringify(this.seafarers[0], null, 2));
+        console.log('First seafarer raw object:', JSON.stringify(this.seafarers[0], null, 2));
       }
 
       this.filteredSeafarers = [...this.seafarers];
-      console.log('✅ Loaded seafarers successfully:', this.seafarers.length);
+      console.log('Loaded seafarers successfully:', this.seafarers.length);
     } catch (error: any) {
-      console.error('❌ Error loading seafarers:', error);
-      console.error('❌ Error details:', {
+      console.error('Error loading seafarers:', error);
+      console.error('Error details:', {
         message: error.message,
         status: error.status,
         error: error
@@ -70,17 +70,17 @@ export class SeafarerListComponent implements OnInit {
       this.seafarers = [];
       this.filteredSeafarers = [];
     } finally {
-      console.log('🏁 Setting isLoading to false');
+      console.log('Setting isLoading to false');
       this.isLoading = false;
-      this.cdr.detectChanges(); // ✅ Force UI update
-      console.log('🎨 Change detection triggered');
+      this.cdr.detectChanges();
+      console.log('Change detection triggered');
     }
 
-    console.log('🏁 loadSeafarers completed. isLoading:', this.isLoading);
+    console.log('loadSeafarers completed. isLoading:', this.isLoading);
   }
 
   /**
-   * ✅ Search/filter seafarers
+   * Search/filter seafarers
    */
   onSearch(): void {
     if (!this.searchText.trim()) {
@@ -102,21 +102,21 @@ export class SeafarerListComponent implements OnInit {
   }
 
   /**
-   * ✅ Navigate to add seafarer form
+   * Navigate to add seafarer form
    */
   addSeafarer(): void {
     this.router.navigate(['/seafarers/add']);
   }
 
   /**
-   * ✅ Navigate to edit seafarer form
+   * Navigate to edit seafarer form
    */
   editSeafarer(id: number): void {
     this.router.navigate(['/seafarers/edit', id]);
   }
 
   /**
-   * ✅ Toggle active/inactive status
+   * Toggle active/inactive status
    */
   async toggleStatus(seafarer: Seafarer): Promise<void> {
     if (!seafarer.Id) return;
@@ -127,16 +127,16 @@ export class SeafarerListComponent implements OnInit {
     try {
       await this.seafarerService.toggleActiveStatus(seafarer.Id, newStatus);
       seafarer.IsActive = newStatus;
-      console.log(`✅ Seafarer ${action}d successfully`);
-      this.cdr.detectChanges(); // ✅ Force UI update
+      console.log(`Seafarer ${action}d successfully`);
+      this.cdr.detectChanges();
     } catch (error: any) {
-      console.error(`❌ Failed to ${action} seafarer:`, error);
+      console.error(`Failed to ${action} seafarer:`, error);
       this.errorMessage = `Failed to ${action} seafarer: ${error.message}`;
     }
   }
 
   /**
-   * ✅ Format date for display
+   * Format date for display
    */
   formatDate(date: Date | string | null | undefined): string {
     if (!date) return '-';
@@ -156,7 +156,7 @@ export class SeafarerListComponent implements OnInit {
   }
 
   /**
-   * ✅ Calculate age from birth date
+   * Calculate age from birth date
    */
   calculateAge(birthDate: Date | string | undefined): number | string {
     if (!birthDate) return '-';
@@ -180,7 +180,7 @@ export class SeafarerListComponent implements OnInit {
   }
 
   /**
-   * ✅ Logout
+   * Logout
    */
   logout(): void {
     this.authService.logout();

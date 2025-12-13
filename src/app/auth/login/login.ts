@@ -25,10 +25,10 @@ export class LoginComponent {
   ) { }
 
   /**
-   * ✅ معالج تسجيل الدخول
+   * Login handler
    */
   async onLogin(): Promise<void> {
-    // التحقق من المدخلات
+    // Validate inputs
     if (!this.credentials.username || !this.credentials.password) {
       this.errorMessage = 'الرجاء إدخال اسم المستخدم وكلمة المرور';
       return;
@@ -44,21 +44,21 @@ export class LoginComponent {
         this.credentials.password
       );
 
-      // عرض رسالة النجاح
+      // Show success message
       this.userInfo = {
         name: response.userName || this.credentials.username
       };
 
-      console.log('✅ Login Response:', response);
-      console.log('🚀 Redirecting to seafarers page...');
+      console.log('Login Response:', response);
+      console.log('Redirecting to seafarers page...');
 
-      // التوجيه بعد 1.5 ثانية
+      // Redirect after 1.5s
       setTimeout(() => {
         this.router.navigate(['/seafarers']).then(success => {
           if (success) {
-            console.log('✅ Navigation successful');
+            console.log('Navigation successful');
           } else {
-            console.error('❌ Navigation failed');
+            console.error('Navigation failed');
           }
         });
       }, 1500);
@@ -66,7 +66,7 @@ export class LoginComponent {
     } catch (error: any) {
       this.errorMessage = error.message || 'حدث خطأ أثناء تسجيل الدخول';
       this.userInfo = null;
-      console.error('❌ Login Error:', error);
+      console.error('Login Error:', error);
     } finally {
       this.isLoading = false;
     }

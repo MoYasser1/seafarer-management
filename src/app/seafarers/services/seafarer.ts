@@ -17,7 +17,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class SeafarerService {
-  private readonly baseUrl = environment.apiUrl ? `${environment.apiUrl}/api` : '/api'; // ✅ Use environment config
+  private readonly baseUrl = environment.apiUrl ? `${environment.apiUrl}/api` : '/api';
 
   constructor(private http: HttpClient) { }
 
@@ -35,7 +35,7 @@ export class SeafarerService {
   // ==================== SEAFARER CRUD ====================
 
   /**
-   * ✅ الحصول على كل البحارة - Promise (للـ async/await)
+   * Get all seafarers
    */
   async getAllSeafarers(): Promise<Seafarer[]> {
     try {
@@ -51,7 +51,7 @@ export class SeafarerService {
         }
       ).toPromise();
 
-      console.log('🔍 Raw Seafarers Response:', response);
+      console.log('Raw Seafarers Response:', response);
 
       let data = response;
       if (response.data) data = response.data;
@@ -60,11 +60,11 @@ export class SeafarerService {
       if (response.Result) data = response.Result;
 
       if (!Array.isArray(data)) {
-        console.warn('⚠️ Seafarers response is not an array:', data);
+        console.warn('Seafarers response is not an array:', data);
         return [];
       }
 
-      console.log('✅ Found', data.length, 'seafarers');
+      console.log('Found', data.length, 'seafarers');
       return data;
     } catch (error) {
       throw this.handleErrorSync(error);
@@ -72,14 +72,14 @@ export class SeafarerService {
   }
 
   /**
-   * ✅ الحصول على بحار واحد بالـ ID
+   * Get seafarer by ID
    */
   getSeafarerById(id: number): Observable<Seafarer> {
     const params = new HttpParams()
       .set('Direction', 'ltr')
       .set('InCT', '');
 
-    console.log('🔍 Fetching seafarer by ID:', id);
+    console.log('Fetching seafarer by ID:', id);
 
     return this.http.get<any>(
       `${this.baseUrl}/MarineServices/GetAllSeafarers`,
@@ -88,9 +88,9 @@ export class SeafarerService {
         params
       }
     ).pipe(
-      take(1), // ✅ Complete after first emission to prevent infinite loops
+      take(1),
       map(response => {
-        console.log('📥 Raw response for getSeafarerById:', response);
+        console.log('Raw response for getSeafarerById:', response);
 
         let data = response;
         if (response.data) data = response.data;
@@ -100,11 +100,11 @@ export class SeafarerService {
         const seafarer = seafarers.find((s: Seafarer) => s.Id === id);
 
         if (!seafarer) {
-          console.error('❌ Seafarer not found with ID:', id);
+          console.error('Seafarer not found with ID:', id);
           throw new Error('Seafarer not found');
         }
 
-        console.log('✅ Found seafarer:', seafarer);
+        console.log('Found seafarer:', seafarer);
         return seafarer;
       }),
       catchError(this.handleError)
@@ -112,13 +112,13 @@ export class SeafarerService {
   }
 
   /**
-   * ✅ إضافة بحار
+   * Create seafarer
    */
   createSeafarer(data: SaveSeafarerRequest): Observable<any> {
     const params = new HttpParams().set('InCT', '');
 
-    console.log('📤 Creating seafarer:', data);
-    console.log('📤 Full request payload:', JSON.stringify(data, null, 2));
+    console.log('Creating seafarer:', data);
+    console.log('Full request payload:', JSON.stringify(data, null, 2));
 
     return this.http.post<any>(
       `${this.baseUrl}/MarineServices/SaveSeafarer`,
@@ -128,10 +128,10 @@ export class SeafarerService {
         params
       }
     ).pipe(
-      tap(response => console.log('✅ Create response:', response)),
+      tap(response => console.log('Create response:', response)),
       map(response => response.data || response),
       catchError(error => {
-        console.error('❌ Create seafarer error details:', {
+        console.error('Create seafarer error details:', {
           status: error.status,
           statusText: error.statusText,
           message: error.message,
@@ -142,7 +142,7 @@ export class SeafarerService {
 
         // Try to extract meaningful error message
         if (error.error) {
-          console.error('🔍 API Error Content:', error.error);
+          console.error('API Error Content:', error.error);
           if (error.error.Message) console.error('📝 Message:', error.error.Message);
           if (error.error.ExceptionMessage) console.error('📝 ExceptionMessage:', error.error.ExceptionMessage);
           if (error.error.InnerException) console.error('📝 InnerException:', error.error.InnerException);
@@ -159,15 +159,15 @@ export class SeafarerService {
   }
 
   /**
-   * ✅ تعديل بحار
+   * Update seafarer
    */
   updateSeafarer(id: number, data: SaveSeafarerRequest): Observable<any> {
     data.entity.Id = id;
 
     const params = new HttpParams().set('InCT', '');
 
-    console.log('📤 Updating seafarer:', id, data);
-    console.log('📤 Full update payload:', JSON.stringify(data, null, 2));
+    console.log('Updating seafarer:', id, data);
+    console.log('Full update payload:', JSON.stringify(data, null, 2));
 
     return this.http.post<any>(
       `${this.baseUrl}/MarineServices/SaveSeafarer`,
@@ -177,10 +177,10 @@ export class SeafarerService {
         params
       }
     ).pipe(
-      tap(response => console.log('✅ Update response:', response)),
+      tap(response => console.log('Update response:', response)),
       map(response => response.data || response),
       catchError(error => {
-        console.error('❌ Update seafarer error details:', {
+        console.error('Update seafarer error details:', {
           status: error.status,
           statusText: error.statusText,
           message: error.message,
@@ -191,7 +191,7 @@ export class SeafarerService {
 
         // Try to extract meaningful error message
         if (error.error) {
-          console.error('🔍 API Error Content:', error.error);
+          console.error('API Error Content:', error.error);
           if (error.error.Message) console.error('📝 Message:', error.error.Message);
           if (error.error.ExceptionMessage) console.error('📝 ExceptionMessage:', error.error.ExceptionMessage);
           if (error.error.ModelState) console.error('📝 ModelState:', error.error.ModelState);
@@ -203,7 +203,7 @@ export class SeafarerService {
   }
 
   /**
-   * ✅ تفعيل/إلغاء تفعيل بحار
+   * Toggle active status
    */
   async toggleActiveStatus(id: number, isActive: boolean): Promise<void> {
     try {
@@ -213,7 +213,7 @@ export class SeafarerService {
         .set('Status', isActive ? '1' : '2')
         .set('EmpId', '1');
 
-      console.log(`🔄 Toggling seafarer ${id} to ${isActive ? 'active' : 'inactive'}`);
+      console.log(`Toggling seafarer ${id} to ${isActive ? 'active' : 'inactive'}`);
 
       await this.http.post<any>(
         `${this.baseUrl}/MarineServices/ActivateAndInActivateSeafarer`,
@@ -224,9 +224,9 @@ export class SeafarerService {
         }
       ).toPromise();
 
-      console.log('✅ Toggle successful');
+      console.log('Toggle successful');
     } catch (error) {
-      console.error('❌ Toggle error:', error);
+      console.error('Toggle error:', error);
       throw this.handleErrorSync(error);
     }
   }
@@ -234,7 +234,7 @@ export class SeafarerService {
   // ==================== DROPDOWNS ====================
 
   /**
-   * ✅ الحصول على قائمة الموظفين
+   * Get employees list
    */
   getEmployees(): Observable<Employee[]> {
     const params = new HttpParams()
@@ -250,34 +250,34 @@ export class SeafarerService {
         params
       }
     ).pipe(
-      tap(response => console.log('🔍 Raw Employees Response:', response)),
+      tap(response => console.log('Raw Employees Response:', response)),
       map(response => {
         let data = response;
         if (response.data) data = response.data;
         if (response.Data) data = response.Data;
 
         if (!Array.isArray(data)) {
-          console.warn('⚠️ Employees response is not an array');
+          console.warn('Employees response is not an array');
           return [];
         }
 
-        console.log('✅ Processing', data.length, 'employees');
+        console.log('Processing', data.length, 'employees');
 
-        // ✅ Log first employee to see structure
+        // Log first employee to see structure
         if (data.length > 0) {
-          console.log('📋 First employee sample:', data[0]);
-          console.log('📋 Employee keys:', Object.keys(data[0]));
+          console.log('First employee sample:', data[0]);
+          console.log('Employee keys:', Object.keys(data[0]));
         }
 
         const mapped = data.map((item: any) => ({
-          // ✅ FIXED: API returns Value, Text, Code (same as Vendors!)
+          // API returns Value, Text, Code
           EmpId: item.Value || item.EmpId || item.Id || item.id || 0,
           EmpName: item.Text || item.EmpName || item.Name || item.name || 'Unknown',
           EmpCode: item.Code || item.EmpCode || item.code || '',
           JobName: item.JobName || item.Job || item.job || ''
         }));
 
-        console.log('📋 First mapped employee:', mapped[0]);
+        console.log('First mapped employee:', mapped[0]);
 
         return mapped; // Temporarily removed filter to debug
       }),
@@ -286,7 +286,7 @@ export class SeafarerService {
   }
 
   /**
-   * ✅ الحصول على قائمة الكفلاء
+   * Get vendors list
    */
   getVendors(): Observable<Vendor[]> {
     const params = new HttpParams()
@@ -303,9 +303,9 @@ export class SeafarerService {
       }
     ).pipe(
       tap(response => {
-        console.log('🔍 Raw Vendors Response:', response);
-        console.log('🔍 Response Type:', typeof response);
-        console.log('🔍 Is Array?:', Array.isArray(response));
+        console.log('Raw Vendors Response:', response);
+        console.log('Response Type:', typeof response);
+        console.log('Is Array?:', Array.isArray(response));
       }),
       map(response => {
         let data = response;
@@ -316,28 +316,28 @@ export class SeafarerService {
         else if (response.Result) data = response.Result;
 
         if (!Array.isArray(data)) {
-          console.error('❌ Vendors data is not an array:', data);
+          console.error('Vendors data is not an array:', data);
           console.log('Available keys:', Object.keys(response));
           return [];
         }
 
-        console.log('✅ Processing', data.length, 'vendors');
+        console.log('Processing', data.length, 'vendors');
 
         if (data.length > 0) {
-          console.log('📋 First vendor:', data[0]);
-          console.log('📋 Available keys:', Object.keys(data[0]));
+          console.log('First vendor:', data[0]);
+          console.log('Available keys:', Object.keys(data[0]));
         }
 
-        // ✅ FIXED: API returns Value, Code, Text instead of VendorId, VendorCode, VendorName
+        // API returns Value, Code, Text instead of VendorId, VendorCode, VendorName
         return data.map((item: any) => ({
           VendorId: item.Value || item.VendorId || item.vendorId || item.Id || item.id || 0,
           VendorName: item.Text || item.VendorName || item.vendorName || item.Name || item.name || 'Unknown Vendor',
           VendorCode: item.Code || item.VendorCode || item.vendorCode || ''
         })).filter(v => v.VendorId > 0);
       }),
-      tap(vendors => console.log('✅ Final vendors count:', vendors.length)),
+      tap(vendors => console.log('Final vendors count:', vendors.length)),
       catchError(error => {
-        console.error('❌ Error loading vendors:', error);
+        console.error('Error loading vendors:', error);
         return this.handleError(error);
       })
     );
@@ -366,7 +366,7 @@ export class SeafarerService {
       }
     }
 
-    console.error('❌ API Error:', errorMessage, error);
+    console.error('API Error:', errorMessage, error);
     return throwError(() => new Error(errorMessage));
   }
 
@@ -391,7 +391,7 @@ export class SeafarerService {
       }
     }
 
-    console.error('❌ API Error:', errorMessage, error);
+    console.error('API Error:', errorMessage, error);
     return new Error(errorMessage);
   }
 }

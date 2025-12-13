@@ -26,7 +26,7 @@ export class SeafarerFormComponent implements OnInit {
   seafarerForm!: FormGroup;
   isEditMode = false;
   seafarerId?: number;
-  loadedSeafarer?: Seafarer; // ✅ Store the loaded seafarer data
+  loadedSeafarer?: Seafarer;
 
   employees: Employee[] = [];
   vendors: Vendor[] = [];
@@ -53,37 +53,37 @@ export class SeafarerFormComponent implements OnInit {
   }
 
   /**
-   * ✅ Updated Form initialization
+   * Form initialization
    */
   initializeForm(): void {
     this.seafarerForm = this.fb.group({
-      // ✅ Basic Info
+      // Basic Info
       empId: [{ value: '', disabled: false }, Validators.required],
       visaSponsorId: [{ value: '', disabled: false }, Validators.required],
 
-      // ✅ Passport - REQUIRED based on API expectations
-      passportNumber: ['', Validators.required], // ✅ Made required
+      // Passport
+      passportNumber: ['', Validators.required],
       passportIssueDate: ['', Validators.required],
       passportExpiryDate: ['', Validators.required],
 
-      // ✅ Personal Info - Task Requirements
+      // Personal Info
       BirthDate: [''],
       Phone: [''],
       NationalId: [''],
       EmploymentDate: [''],
       InsuranceDate: [''],
 
-      // ✅ Visa
+      // Visa
       visaNumber: [''],
       visaIssueDate: [''],
       visaExpiryDate: [''],
 
-      // ✅ Contract
+      // Contract
       contractStartDate: [''],
       contractEndDate: [''],
       isActive: [true],
 
-      // ✅ API Fields
+      // API Fields
       ResidenceNumber: [''],
       SeamanBookNO: [''], // Will auto-generate if empty
       SeamanIssueDate: [''],
@@ -102,7 +102,7 @@ export class SeafarerFormComponent implements OnInit {
       ContactNameAndNumberDuringEmergenciesUAE: [''],
       ContactNameAndNumberDuringEmergenciesHome: [''],
 
-      // ✅ Next of Kin
+      // Next of Kin
       KinName: [''],
       KinPhone: [''],
       KinEmail: [''],
@@ -122,7 +122,7 @@ export class SeafarerFormComponent implements OnInit {
       LicenseSuspendedOrRevokedComment: [''],
       Remarks: [''],
 
-      // ✅ Arrays
+      // Arrays
       Qualifications: this.fb.array([]),
       Certificates: this.fb.array([]),
       Languages: this.fb.array([]),
@@ -132,58 +132,58 @@ export class SeafarerFormComponent implements OnInit {
   }
 
   /**
-   * ✅ تحديث loadDropdownData - مع تعطيل/تفعيل الـ controls
+   * Load Dropdown Data
    */
   loadDropdownData(): void {
     this.isLoadingDropdowns = true;
 
-    // ✅ تعطيل الـ dropdowns أثناء التحميل
+    // Disable dropdowns while loading
     this.seafarerForm.get('empId')?.disable();
     this.seafarerForm.get('visaSponsorId')?.disable();
 
     // Load Employees
     this.seafarerService.getEmployees().subscribe({
       next: (data) => {
-        console.log('📊 Raw Employees Response:', data);
+        console.log('Raw Employees Response:', data);
         this.employees = data;
         this.seafarerForm.get('empId')?.enable();
-        console.log('✅ Employees loaded:', data.length);
+        console.log('Employees loaded:', data.length);
         if (data.length === 0) {
           this.showToastMessage('تحذير: لا يوجد موظفين في النظام', 'info');
         }
       },
       error: (error) => {
-        console.error('❌ Failed to load employees:', error);
+        console.error('Failed to load employees:', error);
         this.showToastMessage('فشل تحميل الموظفين: ' + error.message, 'error');
         this.seafarerForm.get('empId')?.enable();
       }
     });
 
     // Load Vendors with enhanced debugging
-    console.log('🔄 بدء تحميل الكفلاء (Vendors)...');
+    console.log('Loading Vendors...');
     this.seafarerService.getVendors().subscribe({
       next: (data) => {
-        console.log('📊 استجابة الكفلاء الخام:', data);
-        console.log('📊 عدد الكفلاء:', data?.length);
+        console.log('Vendors Response:', data);
+        console.log('Vendors Count:', data?.length);
 
         if (data && data.length > 0) {
-          console.log('📊 أول كفيل كعينة:', data[0]);
+          console.log('First vendor sample:', data[0]);
         }
 
         this.vendors = data || [];
         this.seafarerForm.get('visaSponsorId')?.enable();
         this.isLoadingDropdowns = false;
 
-        console.log('✅ تم تحميل الكفلاء بنجاح:', this.vendors.length);
-        console.log('✅ مصفوفة الكفلاء:', this.vendors);
+        console.log('Vendors loaded successfully:', this.vendors.length);
+        console.log('Vendors array:', this.vendors);
 
         if (this.vendors.length === 0) {
-          this.showToastMessage('⚠️ لا يوجد كفلاء في النظام. يرجى الاتصال بالمسؤول.', 'error');
+          this.showToastMessage('No vendors found. Please contact admin.', 'error');
         }
       },
       error: (error) => {
-        console.error('❌ فشل تحميل الكفلاء:', error);
-        console.error('❌ تفاصيل الخطأ:', {
+        console.error('Failed to load vendors:', error);
+        console.error('Error details:', {
           status: error.status,
           statusText: error.statusText,
           message: error.message,
@@ -199,35 +199,35 @@ export class SeafarerFormComponent implements OnInit {
   }
 
   checkEditMode(): void {
-    // ✅ Use take(1) to prevent multiple subscriptions
+    // Use take(1) to prevent multiple subscriptions
     this.route.params.pipe().subscribe(params => {
       if (params['id']) {
         this.isEditMode = true;
         this.seafarerId = +params['id'];
-        console.log('📝 Edit mode detected for seafarer ID:', this.seafarerId);
+        console.log('Edit mode detected for seafarer ID:', this.seafarerId);
         this.loadSeafarerData(this.seafarerId);
       }
     });
   }
 
   loadSeafarerData(id: number): void {
-    // ✅ Prevent multiple loads
+    // Prevent multiple loads
     if (this.isLoading) {
-      console.log('⚠️ Already loading seafarer data, skipping...');
+      console.log('Already loading seafarer data, skipping...');
       return;
     }
 
     this.isLoading = true;
-    console.log('🔄 Loading seafarer data for ID:', id);
+    console.log('Loading seafarer data for ID:', id);
 
     this.seafarerService.getSeafarerById(id).subscribe({
       next: (seafarer) => {
-        console.log('✅ Seafarer data loaded:', seafarer);
+        console.log('Seafarer data loaded:', seafarer);
 
-        // ✅ Store the complete loaded seafarer data
+        // Store the complete loaded seafarer data
         this.loadedSeafarer = seafarer;
 
-        // ✅ استخدام patchValue للـ form كامل
+        // Patch form with data
         this.seafarerForm.patchValue({
           empId: seafarer.EmpId,
           visaSponsorId: seafarer.VisaSponsorId,
@@ -275,11 +275,11 @@ export class SeafarerFormComponent implements OnInit {
         }, { emitEvent: false });
 
         this.isLoading = false;
-        console.log('✅ Form patched successfully');
-        console.log('✅ Loaded seafarer stored for edit:', this.loadedSeafarer);
+        console.log('Form patched successfully');
+        console.log('Loaded seafarer stored for edit:', this.loadedSeafarer);
       },
       error: (error) => {
-        console.error('❌ Failed to load seafarer:', error);
+        console.error('Failed to load seafarer:', error);
         this.showToastMessage('Failed to load seafarer data: ' + error.message, 'error');
         this.isLoading = false;
       }
@@ -287,7 +287,7 @@ export class SeafarerFormComponent implements OnInit {
   }
 
   /**
-   * ✅ Helper to format date for input field (yyyy-MM-dd)
+   * Helper to format date for input field (yyyy-MM-dd)
    */
   private formatDateForInput(date?: Date | string | null): string {
     if (!date) return '';
@@ -350,21 +350,21 @@ export class SeafarerFormComponent implements OnInit {
 
 
   /**
-   * ✅ تحديث onSubmit مع getRawValue() لأخذ الـ disabled fields
+   * Submit form
    */
   onSubmit(): void {
-    console.log('📝 Form submitted');
-    console.log('📝 Form valid?', this.seafarerForm.valid);
-    console.log('📝 Form value:', this.seafarerForm.getRawValue());
+    console.log('Form submitted');
+    console.log('Form valid?', this.seafarerForm.valid);
+    console.log('Form value:', this.seafarerForm.getRawValue());
 
     if (this.seafarerForm.invalid) {
-      console.error('❌ Form is invalid!');
+      console.error('Form is invalid!');
 
       // Log which fields are invalid
       Object.keys(this.seafarerForm.controls).forEach(key => {
         const control = this.seafarerForm.get(key);
         if (control && control.invalid) {
-          console.error(`❌ Invalid field: ${key}`, control.errors);
+          console.error(`Invalid field: ${key}`, control.errors);
         }
       });
 
@@ -373,45 +373,45 @@ export class SeafarerFormComponent implements OnInit {
       return;
     }
 
-    console.log('✅ Form is valid, proceeding with submission...');
+    console.log('Form is valid, proceeding with submission...');
 
-    // ✅ استخدام getRawValue() بدلاً من value لأخذ الـ disabled controls
+    // Get raw value to include disabled controls
     const formValue = this.seafarerForm.getRawValue();
 
-    console.log('📦 Raw form value:', formValue);
+    console.log('Raw form value:', formValue);
 
-    // ✅ Check if employee and sponsor are selected
+    // Check if employee and sponsor are selected
     const empId = parseInt(formValue.empId) || 0;
     const visaSponsorId = parseInt(formValue.visaSponsorId) || 0;
 
     if (empId === 0) {
-      this.showToastMessage('⚠️ يجب اختيار موظف from القائمة!', 'error');
-      console.error('❌ empId is 0 - no employee selected!');
+      this.showToastMessage('Must select an employee!', 'error');
+      console.error('empId is 0 - no employee selected!');
       return;
     }
 
     if (visaSponsorId === 0) {
-      this.showToastMessage('⚠️ يجب اختيار كفيل من القائمة!', 'error');
-      console.error('❌ visaSponsorId is 0 - no sponsor selected!');
+      this.showToastMessage('Must select a sponsor!', 'error');
+      console.error('visaSponsorId is 0 - no sponsor selected!');
       return;
     }
 
-    // ✅ Build entity object
+    // Build entity object
     const entityData: any = {
-      // ✅ Core required fields
+      // Core required fields
       EmpId: empId,
       VisaSponsorId: visaSponsorId,
 
-      // ✅ Passport information (now required)
+      // Passport information
       PassportNumber: formValue.passportNumber || null,
       PassPortIssueDate: formValue.passportIssueDate || null,
       IDExPiryDate: formValue.passportExpiryDate || null,
-      // ✅ Visa dates WITH time (as per Postman example: "YYYY-MM-DDTHH:mm:ss")
+      // Visa dates WITH time
       VisaIssueDate: formValue.visaIssueDate ? `${formValue.visaIssueDate}T00:00:00` : null,
       VisaExpiryDate: formValue.visaExpiryDate ? `${formValue.visaExpiryDate}T00:00:00` : null,
       VisaUAEIdNO: formValue.visaNumber || null,
       ResidenceNumber: formValue.ResidenceNumber || null,
-      // ✅ SeamanBookNO needs a default value if empty (based on Postman example)
+      // SeamanBookNO needs a default value if empty
       SeamanBookNO: formValue.SeamanBookNO || `SB-${Date.now()}`,
       SeamanIssueDate: formValue.SeamanIssueDate || null,
       SeamanExpiryDate: formValue.SeamanExpiryDate || null,
@@ -428,7 +428,7 @@ export class SeafarerFormComponent implements OnInit {
       ContactNumberHomeCountry: formValue.ContactNumberHomeCountry || null,
       ContactNameAndNumberDuringEmergenciesUAE: formValue.ContactNameAndNumberDuringEmergenciesUAE || null,
       ContactNameAndNumberDuringEmergenciesHome: formValue.ContactNameAndNumberDuringEmergenciesHome || null,
-      // ✅ Task Requirements - Personal & Employment Info
+      // Task Requirements - Personal & Employment Info
       BirthDate: formValue.BirthDate || null,
       Phone: formValue.Phone || null,
       NationalId: formValue.NationalId || null,
@@ -450,14 +450,14 @@ export class SeafarerFormComponent implements OnInit {
       Remarks: formValue.Remarks || null
     };
 
-    // ✅ If editing, merge with loaded seafarer data to preserve all fields
+    // If editing, merge with loaded seafarer data to preserve all fields
     if (this.isEditMode && this.loadedSeafarer) {
-      console.log('✅ Edit mode: merging with loaded seafarer data');
+      console.log('Edit mode: merging with loaded seafarer data');
       // Preserve any fields that might exist in the loaded data but not in the form
       Object.assign(entityData, this.loadedSeafarer, entityData);
     }
 
-    // ✅ Ensure arrays have at least dummy data if empty (based on Postman requirements)
+    // Ensure arrays have at least dummy data if empty
     const qualifications = formValue.Qualifications && formValue.Qualifications.length > 0
       ? formValue.Qualifications
       : [{
@@ -527,7 +527,7 @@ export class SeafarerFormComponent implements OnInit {
       WorkExperiences: workExperiences
     };
 
-    console.log('📋 Arrays status:', {
+    console.log('Arrays status:', {
       qualificationsCount: qualifications.length,
       certificatesCount: certificates.length,
       languagesCount: languages.length,
@@ -535,8 +535,8 @@ export class SeafarerFormComponent implements OnInit {
       workExperiencesCount: workExperiences.length
     });
 
-    console.log('📤 Sending request:', request);
-    console.log('📦 Entity object:', JSON.stringify(request.entity, null, 2));
+    console.log('Sending request:', request);
+    console.log('Entity object:', JSON.stringify(request.entity, null, 2));
 
     this.isSaving = true;
 
@@ -546,14 +546,14 @@ export class SeafarerFormComponent implements OnInit {
 
     saveOperation.subscribe({
       next: (response) => {
-        console.log('✅ Save successful:', response);
+        console.log('Save successful:', response);
         this.showToastMessage(
           `Seafarer ${this.isEditMode ? 'updated' : 'created'} successfully!`,
           'success'
         );
         this.isSaving = false;
 
-        // ✅ Navigate with state to force reload
+        // Navigate with state to force reload
         setTimeout(() => {
           this.router.navigate(['/seafarers'], {
             queryParams: { refresh: new Date().getTime() }
@@ -561,7 +561,7 @@ export class SeafarerFormComponent implements OnInit {
         }, 1000);
       },
       error: (error) => {
-        console.error('❌ Save failed:', error);
+        console.error('Save failed:', error);
         this.showToastMessage(
           `Failed to ${this.isEditMode ? 'update' : 'create'} seafarer: ` + error.message,
           'error'

@@ -1,4 +1,4 @@
 export const environment = {
     production: false,
-    apiUrl: '' // localhost يستخدم proxy
+    apiUrl: '' // proxy used in development
 };

@@ -20,7 +20,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = environment.apiUrl; // ✅ Use environment config
+  private apiUrl = environment.apiUrl;
   private isBrowser: boolean;
 
   constructor(
@@ -30,19 +30,19 @@ export class AuthService {
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
 
-    // ✅ Check token on service init (only in browser)
+    // Check token on service init (only in browser)
     if (this.isBrowser) {
       this.checkTokenExpiry();
     }
   }
 
   /**
-   * ✅ Login using the correct API format (matching Postman GET with body)
+   * Login using the correct API format
    */
   async login(username: string, password: string): Promise<LoginResponse> {
     const url = `${this.apiUrl}/token`;
 
-    // ⚠️ Unusual: Postman shows GET request with body
+    // Unusual: Postman shows GET request with body
     // Backend might accept both GET and POST
     const body = `username=${username}&Password=${password}&grant_type=password&mobileid=9cb2fcb2de1c71e8`;
 
@@ -55,7 +55,7 @@ export class AuthService {
       const response = await this.http.post<LoginResponse>(url, body, { headers }).toPromise();
 
       if (response && response.access_token) {
-        // ✅ Store token and user info (only in browser)
+        // Store token and user info (only in browser)
         if (this.isBrowser) {
           try {
             localStorage.setItem('auth_token', response.access_token);
@@ -65,19 +65,19 @@ export class AuthService {
               localStorage.setItem('token_expires', response['.expires']);
             }
           } catch (storageError) {
-            console.warn('⚠️ Could not save to localStorage:', storageError);
+            console.warn('Could not save to localStorage:', storageError);
           }
         }
 
-        console.log('✅ Login successful');
-        console.log('📅 Token expires:', response['.expires']);
+        console.log('Login successful');
+        console.log('Token expires:', response['.expires']);
 
         return response;
       }
 
       throw new Error('No token received');
     } catch (error: any) {
-      console.error('❌ Login failed:', error);
+      console.error('Login failed:', error);
 
       if (error.status === 400) {
         throw new Error('اسم المستخدم أو كلمة المرور غير صحيحة');
@@ -90,7 +90,7 @@ export class AuthService {
   }
 
   /**
-   * ✅ Get stored token
+   * Get stored token
    */
   getToken(): string | null {
     if (!this.isBrowser) return null;
@@ -98,13 +98,13 @@ export class AuthService {
     try {
       return localStorage.getItem('auth_token');
     } catch (error) {
-      console.warn('⚠️ Could not read from localStorage:', error);
+      console.warn('Could not read from localStorage:', error);
       return null;
     }
   }
 
   /**
-   * ✅ Get username
+   * Get username
    */
   getUsername(): string | null {
     if (!this.isBrowser) return null;
@@ -112,13 +112,13 @@ export class AuthService {
     try {
       return localStorage.getItem('username');
     } catch (error) {
-      console.warn('⚠️ Could not read from localStorage:', error);
+      console.warn('Could not read from localStorage:', error);
       return null;
     }
   }
 
   /**
-   * ✅ Check if user is authenticated
+   * Check if user is authenticated
    */
   isAuthenticated(): boolean {
     if (!this.isBrowser) return false;
@@ -126,7 +126,7 @@ export class AuthService {
     const token = this.getToken();
 
     if (!token) {
-      console.log('⚠️ No token found');
+      console.log('No token found');
       return false;
     }
 
@@ -138,31 +138,31 @@ export class AuthService {
         const now = new Date();
 
         if (expiryDate <= now) {
-          console.warn('⚠️ Token expired at:', expiryDate);
+          console.warn('Token expired at:', expiryDate);
           this.logout();
           return false;
         }
 
-        console.log('✅ Token valid until:', expiryDate);
+        console.log('Token valid until:', expiryDate);
       }
     } catch (error) {
-      console.warn('⚠️ Could not check token expiry:', error);
+      console.warn('Could not check token expiry:', error);
     }
 
     return true;
   }
 
   /**
-   * ✅ Check token expiry on init
+   * Check token expiry on init
    */
   private checkTokenExpiry(): void {
     if (!this.isAuthenticated()) {
-      console.log('⚠️ Token check: Not authenticated');
+      console.log('Token check: Not authenticated');
     }
   }
 
   /**
-   * ✅ Get authorization headers for API calls
+   * Get authorization headers for API calls
    */
   getAuthHeaders(): HttpHeaders {
     const token = this.getToken();
@@ -173,7 +173,7 @@ export class AuthService {
   }
 
   /**
-   * ✅ Logout and redirect
+   * Logout and redirect
    */
   logout(): void {
     if (this.isBrowser) {
@@ -182,11 +182,11 @@ export class AuthService {
         localStorage.removeItem('token_expires');
         localStorage.removeItem('username');
       } catch (error) {
-        console.warn('⚠️ Could not clear localStorage:', error);
+        console.warn('Could not clear localStorage:', error);
       }
     }
 
-    console.log('✅ Logged out successfully');
+    console.log('Logged out successfully');
     this.router.navigate(['/login']);
   }
 }

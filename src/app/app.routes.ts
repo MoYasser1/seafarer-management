@@ -1,10 +1,7 @@
-// src/app/app.routes.ts
 
 import { Routes } from '@angular/router';
-
-// ✅ استيراد الـ Components (تأكد من المسارات الصحيحة)
 import { LoginComponent } from './auth/login/login';
-import { AuthGuard } from './auth/auth.guard'; // ✅ Class-based guard for Angular 12
+import { AuthGuard } from './auth/auth.guard';
 import { SeafarerListComponent } from './seafarers/seafarer-list/seafarer-list';
 import { SeafarerFormComponent } from './seafarers/seafarer-form/seafarer-form';
 
@@ -21,7 +18,7 @@ export const routes: Routes = [
   {
     path: 'seafarers',
     component: SeafarerListComponent,
-    canActivate: [AuthGuard] // ✅ Using class-based guard
+    canActivate: [AuthGuard]
   },
   {
     path: 'seafarers/add',

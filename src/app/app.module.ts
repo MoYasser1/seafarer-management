@@ -27,12 +27,13 @@ import { TokenInterceptor } from './shared/interceptors/token-interceptor';
         SeafarerFormComponent
     ],
     imports: [
-        BrowserModule,
-        FormsModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        RouterModule.forRoot(routes)
-    ],
+    BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    RouterModule.forRoot(routes),
+    RouterModule
+],
     providers: [
         AuthService,
         SeafarerService,
