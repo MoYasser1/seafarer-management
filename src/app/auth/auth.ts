@@ -37,23 +37,22 @@ export class AuthService {
   }
 
   /**
-   * ✅ Login using the correct API format
+   * ✅ Login using the correct API format (matching Postman GET with body)
    */
   async login(username: string, password: string): Promise<LoginResponse> {
     const url = `${this.apiUrl}/token`;
 
-    const body = new HttpParams()
-      .set('username', username)
-      .set('password', password)
-      .set('grant_type', 'password')
-      .set('mobileid', '9cb2fcb2de1c71e8');
+    // ⚠️ Unusual: Postman shows GET request with body
+    // Backend might accept both GET and POST
+    const body = `username=${username}&Password=${password}&grant_type=password&mobileid=9cb2fcb2de1c71e8`;
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded'
     });
 
     try {
-      const response = await this.http.post<LoginResponse>(url, body.toString(), { headers }).toPromise();
+      // Try POST first (standard OAuth2)
+      const response = await this.http.post<LoginResponse>(url, body, { headers }).toPromise();
 
       if (response && response.access_token) {
         // ✅ Store token and user info (only in browser)
