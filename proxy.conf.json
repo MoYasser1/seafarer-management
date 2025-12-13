@@ -1,0 +1,14 @@
+{
+    "/api": {
+        "target": "http://176.9.184.190",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    "/token": {
+        "target": "http://176.9.184.190",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    }
+}

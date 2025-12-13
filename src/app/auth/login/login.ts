@@ -1,15 +1,11 @@
 // src/app/auth/login/login.ts
 
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, LoginResponse } from '../auth';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
@@ -26,7 +22,7 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   /**
    * ✅ معالج تسجيل الدخول
@@ -66,7 +62,7 @@ export class LoginComponent {
           }
         });
       }, 1500);
-      
+
     } catch (error: any) {
       this.errorMessage = error.message || 'حدث خطأ أثناء تسجيل الدخول';
       this.userInfo = null;

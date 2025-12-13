@@ -1,26 +1,12 @@
 // src/app/app.routes.ts
 
 import { Routes } from '@angular/router';
-import { inject } from '@angular/core';
-import { Router } from '@angular/router';
 
 // ✅ استيراد الـ Components (تأكد من المسارات الصحيحة)
 import { LoginComponent } from './auth/login/login';
-import { AuthService } from './auth/auth';
-import { SeafarerListComponent } from './seafarers/seafarer-list/seafarer-list'; // ✅ ADDED
+import { AuthGuard } from './auth/auth.guard'; // ✅ Class-based guard for Angular 12
+import { SeafarerListComponent } from './seafarers/seafarer-list/seafarer-list';
 import { SeafarerFormComponent } from './seafarers/seafarer-form/seafarer-form';
-
-// ✅ Auth Guard
-export const authGuard = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-
-  if (authService.isAuthenticated()) {
-    return true;
-  }
-
-  return router.parseUrl('/login');
-};
 
 export const routes: Routes = [
   {
@@ -34,18 +20,18 @@ export const routes: Routes = [
   },
   {
     path: 'seafarers',
-    component: SeafarerListComponent,  // ✅ الآن يعمل
-    canActivate: [authGuard]
+    component: SeafarerListComponent,
+    canActivate: [AuthGuard] // ✅ Using class-based guard
   },
   {
     path: 'seafarers/add',
     component: SeafarerFormComponent,
-    canActivate: [authGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'seafarers/edit/:id',
     component: SeafarerFormComponent,
-    canActivate: [authGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: '**',

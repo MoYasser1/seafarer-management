@@ -1,17 +1,13 @@
 // src/app/seafarers/seafarer-list/seafarer-list.component.ts
 
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Seafarer } from '../models/seafarer.model';
 import { SeafarerService } from '../services/seafarer';
 import { AuthService } from '../../auth/auth';
 
 @Component({
   selector: 'app-seafarer-list',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './seafarer-list.html',
   styleUrls: ['./seafarer-list.css']
 })
@@ -27,11 +23,20 @@ export class SeafarerListComponent implements OnInit {
     private seafarerService: SeafarerService,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.loadSeafarers();
+
+    // ✅ Listen for query param changes (triggered after create/update)
+    this.route.queryParams.subscribe(params => {
+      if (params['refresh']) {
+        console.log('🔄 Refresh triggered, reloading seafarers...');
+        this.loadSeafarers();
+      }
+    });
   }
 
 
@@ -119,17 +124,14 @@ export class SeafarerListComponent implements OnInit {
     const newStatus = !seafarer.IsActive;
     const action = newStatus ? 'activate' : 'inactivate';
 
-    if (!confirm(`Are you sure you want to ${action} this seafarer?`)) {
-      return;
-    }
-
     try {
       await this.seafarerService.toggleActiveStatus(seafarer.Id, newStatus);
       seafarer.IsActive = newStatus;
       console.log(`✅ Seafarer ${action}d successfully`);
+      this.cdr.detectChanges(); // ✅ Force UI update
     } catch (error: any) {
       console.error(`❌ Failed to ${action} seafarer:`, error);
-      alert(`Failed to ${action} seafarer: ${error.message}`);
+      this.errorMessage = `Failed to ${action} seafarer: ${error.message}`;
     }
   }
 
@@ -181,8 +183,6 @@ export class SeafarerListComponent implements OnInit {
    * ✅ Logout
    */
   logout(): void {
-    if (confirm('Are you sure you want to logout?')) {
-      this.authService.logout();
-    }
+    this.authService.logout();
   }
 }

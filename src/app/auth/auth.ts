@@ -4,7 +4,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+// RxJS 6 uses .toPromise() instead of firstValueFrom
 
 export interface LoginResponse {
   access_token: string;
@@ -19,7 +19,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://176.9.184.190';
+  private apiUrl = ''; // Using proxy now
   private isBrowser: boolean;
 
   constructor(
@@ -28,7 +28,7 @@ export class AuthService {
     @Inject(PLATFORM_ID) platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
-    
+
     // ✅ Check token on service init (only in browser)
     if (this.isBrowser) {
       this.checkTokenExpiry();
@@ -40,7 +40,7 @@ export class AuthService {
    */
   async login(username: string, password: string): Promise<LoginResponse> {
     const url = `${this.apiUrl}/token`;
-    
+
     const body = new HttpParams()
       .set('username', username)
       .set('password', password)
@@ -52,17 +52,15 @@ export class AuthService {
     });
 
     try {
-      const response = await firstValueFrom(
-        this.http.post<LoginResponse>(url, body.toString(), { headers })
-      );
-      
+      const response = await this.http.post<LoginResponse>(url, body.toString(), { headers }).toPromise();
+
       if (response && response.access_token) {
         // ✅ Store token and user info (only in browser)
         if (this.isBrowser) {
           try {
             localStorage.setItem('auth_token', response.access_token);
             localStorage.setItem('username', response.userName || username);
-            
+
             if (response['.expires']) {
               localStorage.setItem('token_expires', response['.expires']);
             }
@@ -70,17 +68,17 @@ export class AuthService {
             console.warn('⚠️ Could not save to localStorage:', storageError);
           }
         }
-        
+
         console.log('✅ Login successful');
         console.log('📅 Token expires:', response['.expires']);
-        
+
         return response;
       }
-      
+
       throw new Error('No token received');
     } catch (error: any) {
       console.error('❌ Login failed:', error);
-      
+
       if (error.status === 400) {
         throw new Error('اسم المستخدم أو كلمة المرور غير صحيحة');
       } else if (error.status === 0) {
@@ -96,7 +94,7 @@ export class AuthService {
    */
   getToken(): string | null {
     if (!this.isBrowser) return null;
-    
+
     try {
       return localStorage.getItem('auth_token');
     } catch (error) {
@@ -110,7 +108,7 @@ export class AuthService {
    */
   getUsername(): string | null {
     if (!this.isBrowser) return null;
-    
+
     try {
       return localStorage.getItem('username');
     } catch (error) {
@@ -124,33 +122,33 @@ export class AuthService {
    */
   isAuthenticated(): boolean {
     if (!this.isBrowser) return false;
-    
+
     const token = this.getToken();
-    
+
     if (!token) {
       console.log('⚠️ No token found');
       return false;
     }
-    
+
     // Check if token is expired
     try {
       const expires = localStorage.getItem('token_expires');
       if (expires) {
         const expiryDate = new Date(expires);
         const now = new Date();
-        
+
         if (expiryDate <= now) {
           console.warn('⚠️ Token expired at:', expiryDate);
           this.logout();
           return false;
         }
-        
+
         console.log('✅ Token valid until:', expiryDate);
       }
     } catch (error) {
       console.warn('⚠️ Could not check token expiry:', error);
     }
-    
+
     return true;
   }
 
@@ -187,7 +185,7 @@ export class AuthService {
         console.warn('⚠️ Could not clear localStorage:', error);
       }
     }
-    
+
     console.log('✅ Logged out successfully');
     this.router.navigate(['/login']);
   }

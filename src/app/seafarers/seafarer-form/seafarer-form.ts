@@ -1,8 +1,7 @@
 // src/app/seafarers/seafarer-form/seafarer-form.component.ts
 
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import {
@@ -20,8 +19,6 @@ import { SeafarerService } from '../services/seafarer';
 
 @Component({
   selector: 'app-seafarer-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './seafarer-form.html',
   styleUrls: ['./seafarer-form.css']
 })
@@ -64,8 +61,8 @@ export class SeafarerFormComponent implements OnInit {
       empId: [{ value: '', disabled: false }, Validators.required],
       visaSponsorId: [{ value: '', disabled: false }, Validators.required],
 
-      // ✅ Passport - REQUIRED based on Postman
-      passportNumber: [''],
+      // ✅ Passport - REQUIRED based on API expectations
+      passportNumber: ['', Validators.required], // ✅ Made required
       passportIssueDate: ['', Validators.required],
       passportExpiryDate: ['', Validators.required],
 
@@ -404,7 +401,9 @@ export class SeafarerFormComponent implements OnInit {
       // ✅ Core required fields
       EmpId: empId,
       VisaSponsorId: visaSponsorId,
-      // ✅ Passport dates (Postman format: "YYYY-MM-DD" for dates without time)
+
+      // ✅ Passport information (now required)
+      PassportNumber: formValue.passportNumber || null,
       PassPortIssueDate: formValue.passportIssueDate || null,
       IDExPiryDate: formValue.passportExpiryDate || null,
       // ✅ Visa dates WITH time (as per Postman example: "YYYY-MM-DDTHH:mm:ss")
@@ -554,9 +553,12 @@ export class SeafarerFormComponent implements OnInit {
         );
         this.isSaving = false;
 
+        // ✅ Navigate with state to force reload
         setTimeout(() => {
-          this.router.navigate(['/seafarers']);
-        }, 1500);
+          this.router.navigate(['/seafarers'], {
+            queryParams: { refresh: new Date().getTime() }
+          });
+        }, 1000);
       },
       error: (error) => {
         console.error('❌ Save failed:', error);
@@ -569,11 +571,11 @@ export class SeafarerFormComponent implements OnInit {
     });
   }
 
+
   onCancel(): void {
-    if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
-      this.router.navigate(['/seafarers']);
-    }
+    this.router.navigate(['/seafarers']);
   }
+
 
   // ==================== VALIDATION ====================
 

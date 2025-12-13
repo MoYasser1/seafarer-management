@@ -2,7 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, throwError, firstValueFrom } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap, take } from 'rxjs/operators';
 import {
   Seafarer,
@@ -16,7 +16,7 @@ import {
   providedIn: 'root'
 })
 export class SeafarerService {
-  private readonly baseUrl = 'http://176.9.184.190/api';
+  private readonly baseUrl = '/api'; // Using proxy now
 
   constructor(private http: HttpClient) { }
 
@@ -42,15 +42,13 @@ export class SeafarerService {
         .set('Direction', 'ltr')
         .set('InCT', '');
 
-      const response = await firstValueFrom(
-        this.http.get<any>(
-          `${this.baseUrl}/MarineServices/GetAllSeafarers`,
-          {
-            headers: this.getAuthHeaders(),
-            params
-          }
-        )
-      );
+      const response = await this.http.get<any>(
+        `${this.baseUrl}/MarineServices/GetAllSeafarers`,
+        {
+          headers: this.getAuthHeaders(),
+          params
+        }
+      ).toPromise();
 
       console.log('🔍 Raw Seafarers Response:', response);
 
@@ -146,7 +144,12 @@ export class SeafarerService {
           console.error('🔍 API Error Content:', error.error);
           if (error.error.Message) console.error('📝 Message:', error.error.Message);
           if (error.error.ExceptionMessage) console.error('📝 ExceptionMessage:', error.error.ExceptionMessage);
+          if (error.error.InnerException) console.error('📝 InnerException:', error.error.InnerException);
+          if (error.error.StackTrace) console.error('📝 StackTrace:', error.error.StackTrace);
           if (error.error.ModelState) console.error('📝 ModelState:', error.error.ModelState);
+
+          // Log the entire error object structure
+          console.error('📋 Full error object keys:', Object.keys(error.error));
         }
 
         return this.handleError(error);
@@ -211,16 +214,14 @@ export class SeafarerService {
 
       console.log(`🔄 Toggling seafarer ${id} to ${isActive ? 'active' : 'inactive'}`);
 
-      await firstValueFrom(
-        this.http.post<any>(
-          `${this.baseUrl}/MarineServices/ActivateAndInActivateSeafarer`,
-          null,
-          {
-            headers: this.getAuthHeaders(),
-            params
-          }
-        )
-      );
+      await this.http.post<any>(
+        `${this.baseUrl}/MarineServices/ActivateAndInActivateSeafarer`,
+        null,
+        {
+          headers: this.getAuthHeaders(),
+          params
+        }
+      ).toPromise();
 
       console.log('✅ Toggle successful');
     } catch (error) {
